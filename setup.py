@@ -43,5 +43,6 @@ setup(
     # $ pip install -e .[test]
     extras_require={
         'test': ['versioneer', 'pylint', 'pycodestyle', 'pyflakes', 'pytest', 'mock', 'pytest-cov', 'coverage'],
+        'test-asyncio': ['pytest-asyncio', 'pexpect'],
     },
 )

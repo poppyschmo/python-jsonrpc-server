@@ -25,3 +25,20 @@ build: false  # Not a C# project
 
 cache:
   - '%APPDATA%\pip\Cache'
+
+for:
+-
+  matrix:
+    only:
+      - PYTHON_VERSION: "2.7.15"
+
+  test_script:
+  - "%PYTHON%/Scripts/pytest.exe py.test -o norecursedirs=test/asyncio test/"
+
+-
+  matrix:
+    only:
+      - PYTHON_VERSION: "3.5.7"
+
+  before_test:
+  - "%PYTHON%/python.exe -m pip install .[test-asyncio]"

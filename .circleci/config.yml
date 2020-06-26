@@ -7,17 +7,17 @@ jobs:
     steps:
       - checkout
       - run: pip install -e .[test]
-      - run: py.test test/
-      - run: pylint pyls_jsonrpc test
+      - run: py.test -onorecursedirs=test/asyncio test/
+      - run: pylint --ignore=test/asyncio pyls_jsonrpc test
       - run: pycodestyle pyls_jsonrpc test
-      - run: pyflakes pyls_jsonrpc test
+      - run: pyflakes $(find pyls_jsonrpc test \! -path \*/asyncio/\* -a -name \*.py)
 
   python3-test:
     docker:
       - image: "python:3.5-stretch"
     steps:
       - checkout
-      - run: pip install -e .[test]
+      - run: pip install -e .[test,test-asyncio]
       - run: py.test test/
 
   lint:
