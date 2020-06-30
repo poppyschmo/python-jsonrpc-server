@@ -12,7 +12,7 @@ pytest.mark.skipif(sys.version_info < (3, 5, 2), reason="Compat")
 # pylint: disable=wrong-import-position
 from pyls_jsonrpc.asyncio.streams import connect_oneoff, serve_forever  # noqa: E402
 
-from .conftest import get_async_mock, await_assertion, kv_chk  # noqa: E402
+from .conftest import get_async_mock, await_assertion, await_condition, kv_chk  # noqa: E402
 
 pytestmark = pytest.mark.asyncio
 
@@ -63,9 +63,6 @@ async def test_serve_forever_bad_json(rw_conn, caplog):
     consumer = get_async_mock()
     loop = asyncio.get_event_loop()
     task = loop.create_task(serve_forever(consumer, reader))
-    await await_assertion(
-        lambda: reader._buffer == data
-    )
 
     def find():
         val = caplog.handler.stream.getvalue().lower()
@@ -90,7 +87,7 @@ async def test_writer(rw_conn):
             b'{"id": "hello", "method": "method", "params": {}}'
         )
     else:
-        await await_assertion(lambda: s.recv(1, socket.MSG_PEEK))
+        await await_condition(lambda: s.recv(1, socket.MSG_PEEK))
         expected = s.recv(4096)
         assert expected.startswith(
             b"Content-Length: 44\r\n"
@@ -113,7 +110,7 @@ async def test_writer_bad_message(rw_conn):
     if os.name == "nt":
         assert s.recv(4096) == b""
     else:
-        await await_assertion(lambda: s.recv(1, socket.MSG_PEEK))
+        await await_condition(lambda: s.recv(1, socket.MSG_PEEK))
         assert s.recv(4096) == (
             b"Content-Length: 10\r\n"
             b"Content-Type: application/vscode-jsonrpc; charset=utf8\r\n"
